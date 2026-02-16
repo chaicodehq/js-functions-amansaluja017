@@ -65,16 +65,135 @@
  */
 export function createElection(candidates) {
   // Your code here
+
+  const votes = {};
+  const registeredVoters = [];
+
+  function registerVoter(voter) {
+    if (
+      typeof voter !== "object" ||
+      voter === null ||
+      !voter.name ||
+      !voter.age ||
+      !voter.id ||
+      voter.age < 18
+    )
+      return false;
+
+    if (
+      registeredVoters.findIndex(
+        (registerVoter) => registerVoter.id === voter.id,
+      ) !== -1
+    )
+      return false;
+
+    registeredVoters.push(voter);
+    return true;
+  }
+
+  function castVote(voterId, candidateId, onSuccess, onError) {
+    if (
+      registeredVoters.findIndex(
+        (registerVoter) => registerVoter.id === voterId,
+      ) !== -1 &&
+      candidates.findIndex((cadidate) => cadidate.id === candidateId) !== -1 &&
+      !Object.keys(votes).includes(voterId)
+    ) {
+      votes[voterId] = candidateId;
+      return onSuccess({ voterId, candidateId });
+    } else {
+      return onError(
+        "voterid id not registered or cadidate not found or voter is already cast",
+      );
+    }
+  }
+
+  function getResults(sortFn) {
+    const results = [];
+    candidates.reduce((_, curr) => {
+      const totalVotes = Object.values(votes).filter(
+        (vote) => vote === curr.id,
+      );
+      const voteCount = {
+        id: curr.id,
+        name: curr.name,
+        party: curr.party,
+        votes: totalVotes.length,
+      };
+
+      results.push(voteCount);
+    }, {});
+
+    return sortFn
+      ? results.sort(sortFn)
+      : results.sort((a, b) => b.votes - a.votes);
+  }
+
+  function getWinner() {
+    if (!Object.keys(votes).length) return null;
+
+    const winner = getResults();
+
+    return winner[0];
+  }
+
+  return {
+    registerVoter,
+    castVote,
+    getResults,
+    getWinner,
+  };
 }
 
 export function createVoteValidator(rules) {
   // Your code here
+  if (typeof rules !== "object") return {};
+
+  const response = { valid: false, reason: "" };
+
+  return function (object) {
+    for (const element of rules.requiredFields) {
+      if (!Object.keys(object).includes(element)) {
+        response.reason = "All fields are required!";
+        return response;
+      }
+    }
+
+    if (object.age < rules.minAge) {
+      response.reason = "Age must be greater than 18";
+      return response;
+    }
+
+    ((response.valid = true), (response.reason = "All good"));
+    return response;
+  };
 }
 
 export function countVotesInRegions(regionTree) {
   // Your code here
+  if (typeof regionTree !== "object" || regionTree === null) return 0;
+
+  return (
+    regionTree.votes +
+    regionTree.subRegions.reduce((acc, curr) => {
+      if (curr.subRegions.length) {
+        return acc + countVotesInRegions(curr);
+      }
+      return acc + curr.votes;
+    }, 0)
+  );
 }
 
 export function tallyPure(currentTally, candidateId) {
   // Your code here
+  //
+  if (typeof currentTally !== "object" || !candidateId) return {};
+
+  const copyCurrentTally = { ...currentTally };
+
+  Object.hasOwn(copyCurrentTally, candidateId)
+    ? copyCurrentTally[candidateId]++
+    : (copyCurrentTally[candidateId] = 1);
+
+  return copyCurrentTally;
 }

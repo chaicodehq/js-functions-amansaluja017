@@ -54,20 +54,66 @@
  */
 export function repeatChar(char, n) {
   // Your code here
+  if (n <= 0 || typeof char !== "string") return "";
+
+  return char + repeatChar(char, n - 1);
 }
 
 export function sumNestedArray(arr) {
   // Your code here
+  if (!Array.isArray(arr) || !arr.length) return 0;
+
+  return arr.reduce((acc, curr) => {
+    if (Array.isArray(curr)) {
+      return acc + sumNestedArray(curr);
+    }
+
+    if (typeof curr === "number") {
+      return acc + curr;
+    }
+
+    return acc;
+  }, 0);
 }
 
 export function flattenArray(arr) {
   // Your code here
+  if (!Array.isArray(arr) || !arr.length) return [];
+
+  return arr.reduce((acc, curr) => {
+    if (Array.isArray(curr)) {
+      return flattenArray([...acc, ...curr]);
+    }
+
+    acc.push(curr);
+    return acc;
+  }, []);
 }
 
-export function isPalindrome(str) {
+export function isPalindrome(str, i = 0, j = str?.length - 1) {
   // Your code here
+  if (typeof str !== "string" || str === null || str === undefined) return false;
+
+  if (i >= str.length) return true;
+
+  if (str[i].toLowerCase() !== str[j].toLowerCase()) return false;
+  (i++, j--);
+
+  return isPalindrome(str, i, j);
 }
 
-export function generatePattern(n) {
+export function generatePattern(n, i = 1, arr = []) {
   // Your code here
+  // 
+  if (typeof (n) !== "number" || n <= 0 || !Number.isInteger(n)) return [];
+  
+  if (i > n) return;
+  
+  arr.push("*".repeat(i))
+  generatePattern(n, i + 1, arr)
+  
+  if (i !== n) {
+    arr.push("*".repeat(i))
+  }
+  return arr;
 }

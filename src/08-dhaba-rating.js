@@ -46,16 +46,52 @@
  */
 export function createFilter(field, operator, value) {
   // Your code here
+
+  return function (object) {
+    if (object.hasOwnProperty(field)) {
+      if (operator === ">=") {
+        return object[field] >= value
+      } else if (operator === "<=") {
+        return object[field] <= value
+      } else if (operator === "===") {
+        return object[field] === value
+      } else if (operator === "<") {
+        return object[field] < value
+      } else if (operator === ">") {
+        return object[field] > value
+      } else return false
+    } else return false
+
+  }
 }
 
 export function createSorter(field, order = "asc") {
   // Your code here
+
+  return function (a, b) {
+    if (order === "desc") return b[field] - a[field] || b[field].localeCompare(a[field]);
+    return a[field] - b[field] || a[field].localeCompare(b[field])
+  }
 }
 
 export function createMapper(fields) {
   // Your code here
+
+  return function (object) {
+    const response = {};
+    fields.map(field => response[field] = object[field])
+    return response;
+  }
 }
 
 export function applyOperations(data, ...operations) {
   // Your code here
+
+  if (!Array.isArray(data)) return [];
+
+  const response = operations.reduce((acc, operation) => {
+    return operation(acc)
+  }, data);
+
+  return response;
 }

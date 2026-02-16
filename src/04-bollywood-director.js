@@ -46,12 +46,48 @@
  */
 export function createDialogueWriter(genre) {
   // Your code here
+  const genreNames = ["action", "romance", "comedy", "drama"];
+
+  if (!genreNames.includes(genre)) return null;
+  function writer(hero, villain) {
+    if (!hero || !villain) return "..."
+
+    if (genre === "action") return `${hero} says: 'Tujhe toh main dekh lunga, ${villain}!'`
+    else if (genre === "romance") return `${hero} whispers: '${villain}, tum mere liye sab kuch ho'`
+    else if (genre === "comedy") return `${hero} laughs: '${villain} bhai, kya kar rahe ho yaar!'`
+    else return `${hero} cries: '${villain}, tune mera sab kuch cheen liya!'`
+  }
+
+  return writer;
 }
 
 export function createTicketPricer(basePrice) {
   // Your code here
+
+  if (typeof (basePrice) !== "number" || basePrice <= 0) return null;
+  const multipliers = { silver: 1, gold: 1.5, platinum: 2 };
+
+  function ticket(seatType, isWeekend = false) {
+    if (!Object.keys(multipliers).includes(seatType)) return null;
+
+    const price = Math.round(basePrice * multipliers[seatType]);
+
+    return isWeekend ? Math.round(price * 1.3) : price;
+  }
+
+  return ticket;
 }
 
 export function createRatingCalculator(weights) {
   // Your code here
+
+  if (typeof (weights) !== "object" || weights === null) return null;
+
+  function scoring(scores) {
+
+    const avg = Object.values(scores).map((score, i) => score * Object.values(weights)[i]).reduce((acc, curr) => acc + curr, 0);
+    return parseFloat(avg.toFixed(1));
+  }
+
+  return scoring
 }

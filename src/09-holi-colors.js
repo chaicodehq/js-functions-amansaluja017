@@ -55,20 +55,74 @@
  */
 export function mixColors(color1, color2) {
   // Your code here
+
+  if (typeof (color1) !== "object" || typeof (color2) !== "object" || color1 === null || color2 === null) return null;
+
+  let response = {};
+
+  response.name = `${color1.name}-${color2.name}`
+  response.r = Math.round((color1.r + color2.r) / 2)
+  response.g = Math.round((color1.g + color2.g) / 2)
+  response.b = Math.round((color1.b + color2.b) / 2)
+
+  return response;
 }
 
 export function adjustBrightness(color, factor) {
   // Your code here
+
+  if (color === null || typeof (factor) !== "number") return null;
+
+  let response = {};
+
+  response.name = color.name
+  response.r = Math.min(Math.round(color.r * factor), 255);
+  response.g = Math.min(Math.round(color.g * factor), 255);
+  response.b = Math.min(Math.round(color.b * factor), 255);
+
+  return response;
 }
 
 export function addToPalette(palette, color) {
   // Your code here
+  if (!Array.isArray(palette)) return [color];
+  const newPalette = [...palette];
+
+  if (color === null) return newPalette;
+
+
+  newPalette.push(color);
+
+  return newPalette;
 }
 
 export function removeFromPalette(palette, colorName) {
   // Your code here
+  if (!Array.isArray(palette)) return [];
+  const newPalette = [...palette];
+
+  if (colorName === null) return newPalette;
+
+
+  const location = newPalette.findIndex(color => color.name === colorName);
+  if (location === -1) return newPalette
+  newPalette.splice(location, 1);
+
+  return newPalette;
 }
 
 export function mergePalettes(palette1, palette2) {
   // Your code here
-}
+
+  const mergePalette = [...palette1 || [], ...palette2 || []];
+
+  const withoutDublicateMergeArray = mergePalette.reduce((acc, curr) => {
+    if (!acc.some(value => value.name === curr.name)) {
+      acc.push(curr)
+    }
+    return acc
+  }, []);
+
+
+  return withoutDublicateMergeArray;
+};
